@@ -2,11 +2,11 @@
 # @Author: Noaghzil
 # @Date:   2023-04-17 07:07:25
 # @Last Modified by:   Noaghzil
-# @Last Modified time: 2023-04-17 08:11:46
+# @Last Modified time: 2023-04-19 08:24:08
 import asyncio
 from tortoise import Tortoise, run_async
 from tortoise.connection import connections
-from app.use_case import usecase_one
+from app.use_case import prefetch_usecase
 
 
 async def init_db():
@@ -14,22 +14,22 @@ async def init_db():
     #  also specify the app name of "models"
     #  which contain models from "app.models"
     await Tortoise.init(
-        db_url='sqlite://db.sqlite3',
+        db_url='sqlite://:memory:',
         modules={'models': ['app.models']}
     )
-    print("ddd")
+    print('db init')
     # Generate the schema
     await Tortoise.generate_schemas()
 
 
-def main():
-    run_async(init_db())
+async def main():
+    await init_db()
+    await prefetch_usecase()
 
-def ts_main():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(init_db())
-    loop.run_until_complete(connections.close_all(discard=True))
+# def main():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(init_db())
+#     loop.run_until_complete(connections.close_all(discard=True))
 
 if __name__ == '__main__':
-    run_async(init_db())
-    run_async(usecase_one())
+    run_async(main())
