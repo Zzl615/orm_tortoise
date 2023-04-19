@@ -2,11 +2,11 @@
 # @Author: Noaghzil
 # @Date:   2023-04-17 07:07:25
 # @Last Modified by:   Noaghzil
-# @Last Modified time: 2023-04-19 08:24:08
+# @Last Modified time: 2023-04-19 08:35:50
 import asyncio
 from tortoise import Tortoise, run_async
 from tortoise.connection import connections
-from app.use_case import prefetch_usecase
+from app.use_case.prefetch import prefetch_usecase
 
 
 async def init_db():

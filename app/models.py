@@ -2,7 +2,7 @@
 # @Author: Noaghzil
 # @Date:   2023-04-17 07:05:15
 # @Last Modified by:   Noaghzil
-# @Last Modified time: 2023-04-17 08:06:36
+# @Last Modified time: 2023-04-19 08:14:33
 from tortoise.models import Model
 from tortoise import fields
 
@@ -14,6 +14,7 @@ class Tournament(Model):
     # if you haven't done it yourself
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255)
+    events: fields.ReverseRelation["Event"]
 
     # Defining ``__str__`` is also optional, but gives you pretty
     # represent of model in debugger and interpreter
@@ -52,6 +53,7 @@ class Team(Model):
     """
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255)
+    events: fields.ManyToManyRelation[Event]
 
     def __str__(self):
         return self.name
