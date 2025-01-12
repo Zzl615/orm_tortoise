@@ -21,8 +21,8 @@ class Tournament(Model):
 class Event(Model):
     id = fields.IntField(pk=True)
     name = fields.TextField()
-    tournament: fields.ForeignKeyRelation[Tournament] = fields.ForeignKeyField(
-        "models.Tournament", related_name="events"
+    tournament: fields.ForeignKeyNullableRelation[Tournament] = fields.ForeignKeyField(
+        "models.Tournament", related_name="events", null=True
     )
     participants: fields.ManyToManyRelation["Team"] = fields.ManyToManyField(
         "models.Team", related_name="events", through="event_team"
@@ -48,9 +48,15 @@ async def run():
 
     tournament = await Tournament.create(name="tournament")
     tournament_2 = await Tournament.create(name="tournament2")
+    
     await Event.create(name="First", tournament=tournament)
     await Event.create(name="Second", tournament=tournament)
     await Event.create(name="Third", tournament=tournament_2)
+    event = await Event.create(name="Fourth")
+    event.tournament = tournament_2
+    await event.save()
+    event = await Event.all().filter(name="Fourth").first().prefetch_related("tournament")
+    import pdb; pdb.set_trace()
 
     logger.info(f"Filtered events ======================")
     
@@ -73,7 +79,11 @@ async def run():
         logger.info(f"Filtered tournament.event: {tournament.name}")
         for event in tournament.events:
             logger.info(f"Filtered tournament.event: {event.name}")
-
+    
+    logger.info(f"Events ======================") 
+    first_events = await Event.all().filter(tournament__name="tournament2").prefetch_related("tournament")
+    
+    import pdb; pdb.set_trace()
     logger.info(f"All events ======================") 
     tournament_all_events = await Tournament.all().prefetch_related("events")
     logger.info(f"All events: {tournament_all_events}")
